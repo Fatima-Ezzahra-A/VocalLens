@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   uuid = "F30E0522-20E1-4830-9128-781FF99CDEE9"
+   type = "1"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "E2B67906-3EE0-4566-B7B4-529640EEB05F"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "VocalLens/RecordingView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "36"
+            endingLineNumber = "36"
+            landmarkName = "body"
+            landmarkType = "24">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "2943B5D1-3618-4E2C-96FE-BF8FC3B490A6"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "VocalLens/RecordingView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "54"
+            endingLineNumber = "54"
+            landmarkName = "body"
+            landmarkType = "24">
+            <Locations>
+               <Location
+                  uuid = "2943B5D1-3618-4E2C-96FE-BF8FC3B490A6 - c401ff445e62cee0"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 () -&gt; SwiftUI.TupleView&lt;(SwiftUI.Button&lt;&lt;&lt;opaque return type of SwiftUI.View.font(Swift.Optional&lt;SwiftUI.Font&gt;) -&gt; some&gt;&gt;.0&gt;, SwiftUI._ConditionalContent&lt;&lt;&lt;opaque return type of SwiftUI.View.textFieldStyle&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.TextFieldStyle&gt;(&#x3c4;_1_0) -&gt; some&gt;&gt;.0, &lt;&lt;opaque return type of SwiftUI.View.onTapGesture(count: Swift.Int, perform: () -&gt; ()) -&gt; some&gt;&gt;.0&gt;, SwiftUI.Spacer, SwiftUI.Button&lt;&lt;&lt;opaque return type of SwiftUI.View.foregroundColor(Swift.Optional&lt;SwiftUI.Color&gt;) -&gt; some&gt;&gt;.0&gt;)&gt; in VocalLens.RecordingView.body.getter : some"
+                  moduleName = "VocalLens.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/aazzouzfatimaezzahra/Desktop/Apple%20Academy/Xcode%20project/VocalLens/VocalLens/RecordingView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "55"
+                  endingLineNumber = "55">
+               </Location>
+               <Location
+                  uuid = "2943B5D1-3618-4E2C-96FE-BF8FC3B490A6 - 6a7cdb16712ca612"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #4 () -&gt; &lt;&lt;opaque return type of SwiftUI.View.foregroundColor(Swift.Optional&lt;SwiftUI.Color&gt;) -&gt; some&gt;&gt;.0 in closure #1 () -&gt; SwiftUI.TupleView&lt;(SwiftUI.Button&lt;&lt;&lt;opaque return type of SwiftUI.View.font(Swift.Optional&lt;SwiftUI.Font&gt;) -&gt; some&gt;&gt;.0&gt;, SwiftUI._ConditionalContent&lt;&lt;&lt;opaque return type of SwiftUI.View.textFieldStyle&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.TextFieldStyle&gt;(&#x3c4;_1_0) -&gt; some&gt;&gt;.0, &lt;&lt;opaque return type of SwiftUI.View.onTapGesture(count: Swift.Int, perform: () -&gt; ()) -&gt; some&gt;&gt;.0&gt;, SwiftUI.Spacer, SwiftUI.Button&lt;&lt;&lt;opaque return type of SwiftUI.View.foregroundColor(Swift.Optional&lt;SwiftUI.Color&gt;) -&gt; some&gt;&gt;.0&gt;)&gt; in VocalLens.RecordingView.body.getter : some"
+                  moduleName = "VocalLens.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/aazzouzfatimaezzahra/Desktop/Apple%20Academy/Xcode%20project/VocalLens/VocalLens/RecordingView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "56"
+                  endingLineNumber = "56">
+               </Location>
+               <Location
+                  uuid = "2943B5D1-3618-4E2C-96FE-BF8FC3B490A6 - fc90261f58991d18"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 () -&gt; SwiftUI.TupleView&lt;(SwiftUI.Button&lt;&lt;&lt;opaque return type of SwiftUI.View.font(Swift.Optional&lt;SwiftUI.Font&gt;) -&gt; some&gt;&gt;.0&gt;, SwiftUI._ConditionalContent&lt;&lt;&lt;opaque return type of SwiftUI.View.textFieldStyle&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.TextFieldStyle&gt;(&#x3c4;_1_0) -&gt; some&gt;&gt;.0, &lt;&lt;opaque return type of SwiftUI.View.onTapGesture(count: Swift.Int, perform: () -&gt; ()) -&gt; some&gt;&gt;.0&gt;, SwiftUI.Spacer, SwiftUI.Button&lt;&lt;&lt;opaque return type of SwiftUI.View.foregroundColor(Swift.Optional&lt;SwiftUI.Color&gt;) -&gt; some&gt;&gt;.0&gt;)&gt; in VocalLens.RecordingView.body.getter : some"
+                  moduleName = "VocalLens.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/aazzouzfatimaezzahra/Desktop/Apple%20Academy/Xcode%20project/VocalLens%20copy/VocalLens/RecordingView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "55"
+                  endingLineNumber = "55">
+               </Location>
+               <Location
+                  uuid = "2943B5D1-3618-4E2C-96FE-BF8FC3B490A6 - 52ed024d77d7722a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #4 () -&gt; &lt;&lt;opaque return type of SwiftUI.View.foregroundColor(Swift.Optional&lt;SwiftUI.Color&gt;) -&gt; some&gt;&gt;.0 in closure #1 () -&gt; SwiftUI.TupleView&lt;(SwiftUI.Button&lt;&lt;&lt;opaque return type of SwiftUI.View.font(Swift.Optional&lt;SwiftUI.Font&gt;) -&gt; some&gt;&gt;.0&gt;, SwiftUI._ConditionalContent&lt;&lt;&lt;opaque return type of SwiftUI.View.textFieldStyle&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.TextFieldStyle&gt;(&#x3c4;_1_0) -&gt; some&gt;&gt;.0, &lt;&lt;opaque return type of SwiftUI.View.onTapGesture(count: Swift.Int, perform: () -&gt; ()) -&gt; some&gt;&gt;.0&gt;, SwiftUI.Spacer, SwiftUI.Button&lt;&lt;&lt;opaque return type of SwiftUI.View.foregroundColor(Swift.Optional&lt;SwiftUI.Color&gt;) -&gt; some&gt;&gt;.0&gt;)&gt; in VocalLens.RecordingView.body.getter : some"
+                  moduleName = "VocalLens.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/aazzouzfatimaezzahra/Desktop/Apple%20Academy/Xcode%20project/VocalLens%20copy/VocalLens/RecordingView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "56"
+                  endingLineNumber = "56">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>
