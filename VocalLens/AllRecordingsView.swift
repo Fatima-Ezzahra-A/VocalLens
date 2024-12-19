@@ -7,13 +7,16 @@
 
 import SwiftUI
 import AVFoundation
+import UIKit
 
 struct AllRecordingsView: View {
-    let folder: String
-    @ObservedObject var recorder: AudioRecorder
+    let folder: String // Folder name
+    @ObservedObject var recorder: AudioRecorder // Audio recorder instance
+
     @State private var isRecording = false
     @State private var isEditing = false
-    @State private var selectedRecordings: Set<UUID> = []
+    @State private var selectedRecordings: Set<UUID> = [] // Tracks selected recordings for editing
+    @State private var currentlyPlayingID: UUID? = nil // Tracks the currently playing recording
     @State private var searchText = ""
 
     var filteredRecordings: [Recording] {
@@ -48,6 +51,11 @@ struct AllRecordingsView: View {
                 List {
                     ForEach(filteredRecordings) { recording in
                         recordingRow(recording)
+                            .onTapGesture {
+                                if !isEditing { // Only toggle playback if not in edit mode
+                                    togglePlayback(for: recording)
+                                }
+                            }
                     }
                 }
                 .listStyle(PlainListStyle())
@@ -56,33 +64,69 @@ struct AllRecordingsView: View {
             // Centered Record Button
             VStack {
                 Spacer()
-                Button(action: {
-                    if isRecording {
-                        recorder.stopRecording(to: folder)
-                    } else {
-                        recorder.startRecording(to: folder)
+                if !isEditing {
+                    Button(action: {
+                        if isRecording {
+                            recorder.stopRecording(to: folder)
+                        } else {
+                            recorder.startRecording(to: folder)
+                        }
+                        isRecording.toggle()
+                    }) {
+                        Circle()
+                            .fill(isRecording ? Color.red : Color.blue)
+                            .frame(width: 80, height: 80)
+                            .overlay(
+                                Image(systemName: isRecording ? "stop.fill" : "mic.fill")
+                                    .foregroundColor(.white)
+                                    .font(.title)
+                            )
+                            .shadow(radius: 5)
                     }
-                    isRecording.toggle()
-                }) {
-                    Circle()
-                        .fill(isRecording ? Color.red : Color.blue)
-                        .frame(width: 80, height: 80)
-                        .overlay(
-                            Image(systemName: isRecording ? "stop.fill" : "mic.fill")
-                                .foregroundColor(.white)
-                                .font(.title)
-                        )
-                        .shadow(radius: 5)
+                    .padding(.bottom, 30)
                 }
-                .padding(.bottom, 30)
             }
 
-            // Edit Actions
+            // Edit Actions Fixed at Bottom
             if isEditing {
-                editButtons
+                VStack {
+                    Spacer()
+                    HStack {
+                        // Share Button
+                        Button(action: shareSelected) {
+                            HStack {
+                                Image(systemName: "square.and.arrow.up")
+                                Text("Share")
+                            }
+                            .font(.headline)
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(Color.blue)
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
+                        }
+
+                        Spacer()
+
+                        // Delete Button
+                        Button(action: deleteSelected) {
+                            HStack {
+                                Image(systemName: "trash")
+                                Text("Delete")
+                            }
+                            .font(.headline)
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(Color.red)
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
+                        }
+                    }
+                    .padding()
+                }
             }
         }
-        .navigationTitle("All Recordings")
+        .navigationTitle(folder)
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarItems(
             trailing: Button(isEditing ? "Done" : "Edit") {
@@ -94,62 +138,76 @@ struct AllRecordingsView: View {
 
     // MARK: - Recording Row
     private func recordingRow(_ recording: Recording) -> some View {
-        VStack(alignment: .leading) {
-            HStack {
-                // Play/Stop Button
+        HStack {
+            // Play/Pause Button
+            if !isEditing { // Show play/pause button only in normal mode
                 Button(action: {
-                    recorder.togglePlayback(for: recording.url)
+                    togglePlayback(for: recording)
                 }) {
-                    Image(systemName: recorder.isPlaying(url: recording.url) ? "stop.circle.fill" : "play.circle.fill")
-                        .foregroundColor(.blue)
+                    Image(systemName: recorder.isPlaying(url: recording.url) ? "pause.circle.fill" : "play.circle.fill")
+                        .foregroundColor(recorder.isPlaying(url: recording.url) ? .green : .blue)
                         .font(.title)
                 }
-
-                // Waveform Placeholder and Duration
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color(.systemGray6))
-                    .frame(height: 40)
-                    .overlay(
-                        HStack {
-                            Image(systemName: "waveform") // Replace with animated waveform if needed
-                                .foregroundColor(.blue)
-                            Spacer()
-                            Text(recording.duration)
-                                .foregroundColor(.gray)
-                        }
-                        .padding(.horizontal, 8)
-                    )
             }
 
-            // Transcription Text
-            Text(recording.transcription)
-                .font(.subheadline)
-                .lineLimit(2)
-                .foregroundColor(.gray)
-                .padding(.top, 4)
+            VStack(alignment: .leading) {
+                // Waveform and Duration
+                HStack {
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color(.systemGray6))
+                        .frame(height: 40)
+                        .overlay(
+                            HStack {
+                                Image(systemName: "waveform")
+                                    .foregroundColor(.blue)
+                                Spacer()
+                                Text(recording.duration)
+                                    .foregroundColor(.gray)
+                                    .font(.subheadline)
+                            }
+                            .padding(.horizontal, 8)
+                        )
+                }
+                .padding(.bottom, 4)
+
+                // Transcription Text
+                Text(recording.transcription)
+                    .font(.subheadline)
+                    .lineLimit(2)
+                    .foregroundColor(.gray)
+            }
+            .padding(.leading, 8)
+
+            Spacer()
+
+            if isEditing {
+                // Selection Checkbox
+                Button(action: {
+                    toggleSelection(recording.id)
+                }) {
+                    Image(systemName: selectedRecordings.contains(recording.id) ? "checkmark.circle.fill" : "circle")
+                        .font(.title)
+                        .foregroundColor(selectedRecordings.contains(recording.id) ? .blue : .gray)
+                }
+            }
         }
         .padding(.vertical, 4)
+        .background(isEditing && selectedRecordings.contains(recording.id) ? Color.blue.opacity(0.2) : Color.clear)
+        .cornerRadius(8)
     }
 
-    // Edit Buttons
-    private var editButtons: some View {
-        HStack {
-            Button(action: { shareSelected() }) {
-                Image(systemName: "square.and.arrow.up")
-                    .font(.title)
-                    .foregroundColor(.blue)
-            }
-            Spacer()
-            Button(action: { deleteSelected() }) {
-                Image(systemName: "trash")
-                    .font(.title)
-                    .foregroundColor(.red)
-            }
+    // MARK: - Toggle Playback
+    private func togglePlayback(for recording: Recording) {
+        if recorder.isPlaying(url: recording.url) {
+            recorder.stopPlayback()
+            currentlyPlayingID = nil
+        } else {
+            recorder.playRecording(url: recording.url)
+            currentlyPlayingID = recording.id
         }
-        .padding()
     }
 
-    // MARK: - Helper Methods
+    // MARK: - Edit Buttons Logic
     private func toggleSelection(_ id: UUID) {
         if selectedRecordings.contains(id) {
             selectedRecordings.remove(id)
@@ -168,6 +226,22 @@ struct AllRecordingsView: View {
     }
 
     private func shareSelected() {
-        // Logic for sharing files can be added here
+        // Collect the URLs of the selected recordings
+        let selectedURLs = recorder.recordingsByFolder[folder]?
+            .filter { selectedRecordings.contains($0.id) }
+            .map { $0.url } ?? []
+
+        guard !selectedURLs.isEmpty else {
+            print("No recordings selected to share.")
+            return
+        }
+
+        // Present the share sheet
+        let activityVC = UIActivityViewController(activityItems: selectedURLs, applicationActivities: nil)
+
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let rootVC = windowScene.windows.first?.rootViewController {
+            rootVC.present(activityVC, animated: true, completion: nil)
+        }
     }
 }

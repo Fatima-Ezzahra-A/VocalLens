@@ -5,46 +5,49 @@
 //  Created by aazzouz fatima ezzahra on 13/12/24.
 //
 
-
-import Foundation
 import AVFoundation
+import Foundation
 import Speech
 
-class AudioRecorder: ObservableObject {
-    @Published var folders: [String] = []  // User-created folders
-    @Published var recordingsByFolder: [String: [Recording]] = [:]
-    @Published var deletedRecordingsByFolder: [String: [Recording]] = [:]
-    
+class AudioRecorder: NSObject, ObservableObject {
+    @Published var folders: [String] = ["All Recordings", "Recently Deleted"] // Default folders
+    @Published var recordingsByFolder: [String: [Recording]] = ["All Recordings": []]
+    @Published var deletedRecordingsByFolder: [String: [Recording]] = ["Recently Deleted": []] // Separate deleted recordings by folder
+
     private var audioRecorder: AVAudioRecorder?
     private var audioPlayer: AVAudioPlayer?
-    private var currentlyPlayingURL: URL?
-    
-    // MARK: - Public Playback Status
-    func isPlaying(url: URL) -> Bool {
+    @Published private(set) var currentlyPlayingURL: URL? // Tracks the currently playing recording
+
+    // MARK: - Playback Status
+    public func isPlaying(url: URL) -> Bool {
         return audioPlayer?.isPlaying == true && audioPlayer?.url == url
     }
 
     // MARK: - Add Folder
-    func addFolder(name: String) {
+    public func addFolder(name: String) {
         guard !name.isEmpty, !folders.contains(name) else { return }
         folders.append(name)
         recordingsByFolder[name] = []
-        deletedRecordingsByFolder[name] = []
+        deletedRecordingsByFolder[name] = [] // Initialize deleted recordings for the folder
     }
-    
+
     // MARK: - Start Recording
-    func startRecording(to folder: String) {
+    public func startRecording(to folder: String) {
         let recordingName = "Recording-\(Date().timeIntervalSince1970).m4a"
         let url = getDocumentsDirectory().appendingPathComponent(recordingName)
 
         let settings = [
-            AVFormatIDKey: Int(kAudioFormatAppleLossless), // High-quality format
-            AVSampleRateKey: 48000, // High sample rate
-            AVNumberOfChannelsKey: 2, // Stereo recording
+            AVFormatIDKey: Int(kAudioFormatAppleLossless),
+            AVSampleRateKey: 48000,
+            AVNumberOfChannelsKey: 2,
             AVEncoderAudioQualityKey: AVAudioQuality.max.rawValue
         ]
 
         do {
+            let session = AVAudioSession.sharedInstance()
+            try session.setCategory(.playAndRecord, mode: .default, options: .defaultToSpeaker)
+            try session.setActive(true)
+
             audioRecorder = try AVAudioRecorder(url: url, settings: settings)
             audioRecorder?.record()
             print("✅ Recording started: \(url)")
@@ -54,7 +57,7 @@ class AudioRecorder: ObservableObject {
     }
 
     // MARK: - Stop Recording
-    func stopRecording(to folder: String) {
+    public func stopRecording(to folder: String) {
         guard let recorder = audioRecorder else { return }
         recorder.stop()
 
@@ -62,6 +65,9 @@ class AudioRecorder: ObservableObject {
         loadDuration(for: url) { duration in
             let newRecording = Recording(id: UUID(), url: url, transcription: "Transcribing...", duration: duration)
             DispatchQueue.main.async {
+                if self.recordingsByFolder[folder] == nil {
+                    self.recordingsByFolder[folder] = []
+                }
                 self.recordingsByFolder[folder]?.append(newRecording)
                 self.transcribeAudio(url: url) { transcription in
                     if let index = self.recordingsByFolder[folder]?.firstIndex(where: { $0.id == newRecording.id }) {
@@ -71,17 +77,9 @@ class AudioRecorder: ObservableObject {
             }
         }
     }
-    
-    // MARK: - Toggle Playback
-    func togglePlayback(for url: URL) {
-        if isPlaying(url: url) {
-            stopPlayback()
-        } else {
-            startPlayback(url: url)
-        }
-    }
-    
-    private func startPlayback(url: URL) {
+
+    // MARK: - Play Recording
+    public func playRecording(url: URL) {
         do {
             audioPlayer = try AVAudioPlayer(contentsOf: url)
             audioPlayer?.play()
@@ -91,47 +89,67 @@ class AudioRecorder: ObservableObject {
             print("❌ Playback error: \(error.localizedDescription)")
         }
     }
-    
-    private func stopPlayback() {
+
+    // MARK: - Stop Playback
+    public func stopPlayback() {
         audioPlayer?.stop()
         currentlyPlayingURL = nil
         print("⏹️ Playback stopped.")
     }
-    
+
     // MARK: - Delete Recording
-    func deleteRecording(from folder: String, recording: Recording) {
+    public func deleteRecording(from folder: String, recording: Recording) {
         if let index = recordingsByFolder[folder]?.firstIndex(where: { $0.id == recording.id }) {
             let deletedRecording = recordingsByFolder[folder]?.remove(at: index)
             if let deleted = deletedRecording {
-                deletedRecordingsByFolder[folder]?.append(deleted)
+                if folder == "All Recordings" {
+                    // Add to shared Recently Deleted
+                    deletedRecordingsByFolder["Recently Deleted"]?.append(deleted)
+                } else {
+                    // Add to folder-specific Recently Deleted
+                    if deletedRecordingsByFolder[folder] == nil {
+                        deletedRecordingsByFolder[folder] = []
+                    }
+                    deletedRecordingsByFolder[folder]?.append(deleted)
+                }
             }
         }
     }
-    
+
     // MARK: - Recover Recording
-    func recoverRecording(to folder: String, recording: Recording) {
-        if let index = deletedRecordingsByFolder[folder]?.firstIndex(where: { $0.id == recording.id }) {
-            let recoveredRecording = deletedRecordingsByFolder[folder]?.remove(at: index)
-            if let recovered = recoveredRecording {
-                recordingsByFolder[folder]?.append(recovered)
+    public func recoverRecording(to folder: String, recording: Recording) {
+        if folder == "All Recordings" {
+            if let index = deletedRecordingsByFolder["Recently Deleted"]?.firstIndex(where: { $0.id == recording.id }) {
+                let recoveredRecording = deletedRecordingsByFolder["Recently Deleted"]?.remove(at: index)
+                if let recovered = recoveredRecording {
+                    recordingsByFolder[folder]?.append(recovered)
+                }
+            }
+        } else {
+            if let index = deletedRecordingsByFolder[folder]?.firstIndex(where: { $0.id == recording.id }) {
+                let recoveredRecording = deletedRecordingsByFolder[folder]?.remove(at: index)
+                if let recovered = recoveredRecording {
+                    recordingsByFolder[folder]?.append(recovered)
+                }
             }
         }
     }
-    
+
     // MARK: - Transcribe Audio
     private func transcribeAudio(url: URL, completion: @escaping (String) -> Void) {
         let recognizer = SFSpeechRecognizer()
         let request = SFSpeechURLRecognitionRequest(url: url)
-        
+
         recognizer?.recognitionTask(with: request) { result, error in
             if let result = result {
                 completion(result.bestTranscription.formattedString)
             } else if let error = error {
-                completion("❌ Transcription failed: \(error.localizedDescription)")
+                print("❌ Transcription error: \(error.localizedDescription)")
+                completion("Transcription failed")
             }
         }
     }
-    
+
     // MARK: - Load Duration
     private func loadDuration(for url: URL, completion: @escaping (String) -> Void) {
         let asset = AVURLAsset(url: url)
@@ -147,7 +165,7 @@ class AudioRecorder: ObservableObject {
             }
         }
     }
-    
+
     // MARK: - Helper: Get Documents Directory
     private func getDocumentsDirectory() -> URL {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
